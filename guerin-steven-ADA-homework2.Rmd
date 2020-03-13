@@ -199,17 +199,134 @@ zombiestats
 #Make scatterplots of height and weight vs age
 
 
-heightagegraph<-ggplot(data=d, aes(
-  x = age, 
-  y = height,))
+heightagegraph<-ggplot(data=d, aes(x = age, y = height,)) + geom_point() 
+print(heightagegraph)
 
-heightagegraph
+weightagegraph<-ggplot(data=d, aes(x = age, y = weight,)) + geom_point() 
+print(weightagegraph)
+
+#There appears to be a positive correlation between both weight and age and weight and height. 
 
 #histogram and Q-Q plot
 
+heighthist<-hist(d$height)
+heightqq<-qqnorm(d$height, pch = 1, frame = FALSE)
+
+weighthist<-hist(d$weight)
+weightqq<-qqnorm(d$weight, pch = 1, frame = FALSE)
+
+agehist<-hist(d$age)
+ageqq<-qqnorm(d$age, pch = 1, frame = FALSE)
+
+zombieskilledhist<-hist(d$zombies_killed)
+killedqq<-qqnorm(d$zombies_killed, pch = 1, frame = FALSE)
+
+educationhist<-hist(d$years_of_education)
+educationqq<-qqnorm(d$years_of_education, pch = 1, frame = FALSE)
+
+#Height, weight and age appear to be drawn from a normal distribution, zombies killed and years of education are not. 
+
 #sample_n
 
+colSd <- function (x, na.rm=FALSE) apply(X=x, MARGIN=2, FUN=sd, na.rm=na.rm)
+
+variablesd<-select(d,height,weight,age,zombies_killed,years_of_education)
+dheight2<-sample_n(variablesd,size=30,replace=FALSE)
+colMeans(variablesd) #means
+colSd(variablesd) #sd
+
+CI <- function(x, level = 0.95) {
+  alpha <- 1 - level
+  ci <- mean(x) + c(-1, 1) * qnorm(1 - (alpha / 2)) * sqrt(var(x) / length(x))
+  return(ci)
+}
+
+CI(variablesd$height) 
+CI(variablesd$weight) 
+CI(variablesd$age) 
+CI(variablesd$zombies_killed)
+CI(variablesd$years_of_education)
+
 #more samples 
+
+k <- 99 # number of samples
+n <- 30 # size of each sample
+s <- list(length = k) 
+for (i in 1:k) {
+  s[[i]] <- sample(variablesd$height, size = n, replace = FALSE)
+}
+
+matrixmean <- matrix(unlist(s), ncol = 30, byrow = TRUE)
+t(matrixmean)%>%
+  colMeans(matrixmean)
+
+matrixsd <- matrix(unlist(s), ncol = 30, byrow = TRUE)
+t(matrixsd)%>%
+  colSd(matrixsd)
+
+k <- 99 # number of samples
+n <- 30 # size of each sample
+s <- list(length = k) 
+for (i in 1:k) {
+  s[[i]] <- sample(variablesd$weight, size = n, replace = FALSE)
+}
+
+matrixmean <- matrix(unlist(s), ncol = 30, byrow = TRUE)
+t(matrixmean)%>%
+  colMeans(matrixmean)
+
+matrixsd <- matrix(unlist(s), ncol = 30, byrow = TRUE)
+t(matrixsd)%>%
+  colSd(matrixsd)
+
+k <- 99 # number of samples
+n <- 30 # size of each sample
+s <- list(length = k) 
+for (i in 1:k) {
+  s[[i]] <- sample(variablesd$age, size = n, replace = FALSE)
+}
+
+matrixmean <- matrix(unlist(s), ncol = 30, byrow = TRUE)
+t(matrixmean)%>%
+  colMeans(matrixmean)
+
+matrixsd <- matrix(unlist(s), ncol = 30, byrow = TRUE)
+t(matrixsd)%>%
+  colSd(matrixsd)
+
+k <- 99 # number of samples
+n <- 30 # size of each sample
+s <- list(length = k) 
+for (i in 1:k) {
+  s[[i]] <- sample(variablesd$zombies_killed, size = n, replace = FALSE)
+}
+
+matrixmean <- matrix(unlist(s), ncol = 30, byrow = TRUE)
+t(matrixmean)%>%
+  colMeans(matrixmean)
+
+matrixsd <- matrix(unlist(s), ncol = 30, byrow = TRUE)
+t(matrixsd)%>%
+  colSd(matrixsd)
+
+k <- 99 # number of samples
+n <- 30 # size of each sample
+s <- list(length = k) 
+for (i in 1:k) {
+  s[[i]] <- sample(variablesd$years_of_education, size = n, replace = FALSE)
+}
+
+matrixmean <- matrix(unlist(s), ncol = 30, byrow = TRUE)
+t(matrixmean)%>%
+  colMeans(matrixmean)
+
+matrixsd <- matrix(unlist(s), ncol = 30, byrow = TRUE)
+t(matrixsd)%>%
+  colSd(matrixsd)
+
+#Both the standard deviations and the standard errors look similar to those in the population standard deviation
+
+#All the distrubtions including the ones that didn't originally look normal are normal now
 
 ```
 
