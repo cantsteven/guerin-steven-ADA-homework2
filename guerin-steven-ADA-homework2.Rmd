@@ -9,22 +9,208 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Challenge 1
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r challenge 1, include=TRUE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+f <- "https://raw.githubusercontent.com/difiore/ADA-datasets/master/IMDB-movies.csv"
+d <- read_csv(f, col_names = TRUE)
 
-```{r cars}
-summary(cars)
+names(d)
+
+s<-d %>%
+  select(startYear,runtimeMinutes) %>%
+  filter(between(startYear,1920,1979),runtimeMinutes<240)
+
+twenties<-s %>%
+  select(startYear,runtimeMinutes) %>%
+  filter(between(startYear,1920,1929))
+
+thirties<-s %>%
+  select(startYear,runtimeMinutes) %>%
+  filter(between(startYear,1930,1939))
+
+forties<-s %>%
+  select(startYear,runtimeMinutes) %>%
+  filter(between(startYear,1940,1949))
+
+fifties<-s %>%
+  select(startYear,runtimeMinutes) %>%
+  filter(between(startYear,1950,1959))
+
+sixties<-s %>%
+  select(startYear,runtimeMinutes) %>%
+  filter(between(startYear,1960,1969))
+
+seventies<-s %>%
+  select(startYear,runtimeMinutes) %>%
+  filter(between(startYear,1970,1979))
+
+
+
+
+
+a<-ggplot(data=twenties, aes(twenties$runtimeMinutes)) + geom_histogram()
+b<-ggplot(data=thirties, aes(thirties$runtimeMinutes)) + geom_histogram()
+c<-ggplot(data=forties, aes(forties$runtimeMinutes)) + geom_histogram()
+d<-ggplot(data=fifties, aes(fifties$runtimeMinutes)) + geom_histogram()
+e<-ggplot(data=sixties, aes(sixties$runtimeMinutes)) + geom_histogram()
+f<-ggplot(data=seventies, aes(seventies$runtimeMinutes)) + geom_histogram()
+
+grid.arrange(a,b,c,d,e,f,ncol=3)
+
+
+meantwenties<-mean(twenties$runtimeMinutes)
+stdevtwenties<-sd(twenties$runtimeMinutes)
+
+meanthirties<-mean(thirties$runtimeMinutes)
+stdevthirties<-sd(thirties$runtimeMinutes)
+
+meanforties<-mean(forties$runtimeMinutes)
+stdevforties<-sd(forties$runtimeMinutes)
+
+meanfifties<-mean(fifties$runtimeMinutes)
+stdevfifties<-sd(fifties$runtimeMinutes)
+
+meansixties<-mean(sixties$runtimeMinutes)
+stdevsixties<-sd(sixties$runtimeMinutes)
+
+meanseventies<-mean(seventies$runtimeMinutes)
+stdevseventies<-sd(seventies$runtimeMinutes)
+
+results<-matrix(c(meantwenties,stdevtwenties,meanthirties,stdevthirties,meanforties,stdevforties,meanfifties,stdevfifties,meansixties,stdevsixties,meanseventies,stdevseventies), ncol=2, byrow=TRUE)
+colnames(results) <-c("mean", "stdev")
+rownames(results) <-c("20s", "30s", "40s", "50s", "60s", "70s")
+
+results
+
+sampletwenties<- twenties[sample(nrow(twenties), 100), ] 
+msampletwenties<-mean(sampletwenties$runtimeMinutes)
+
+samplethirties<- thirties[sample(nrow(thirties), 100), ] 
+msamplethirties<-mean(samplethirties$runtimeMinutes)
+
+sampleforties<- forties[sample(nrow(forties), 100), ] 
+msampleforties<-mean(sampleforties$runtimeMinutes)
+
+samplefifties<- fifties[sample(nrow(fifties), 100), ] 
+msamplefifties<-mean(samplefifties$runtimeMinutes)
+
+samplesixties<- sixties[sample(nrow(sixties), 100), ] 
+msamplesixties<-mean(samplesixties$runtimeMinutes)
+
+sampleseventies<- seventies[sample(nrow(seventies), 100), ] 
+msampleseventies<-mean(sampleseventies$runtimeMinutes)
+
+sample100<-matrix(c(msampletwenties,msamplethirties,msampleforties,msamplefifties,msamplesixties,msampleseventies), ncol=1, byrow=TRUE)
+colnames(sample100) <-c("mean")
+rownames(sample100) <-c("20s", "30s", "40s", "50s", "60s", "70s")
+
+sample100
+
+results
+
+k <- 10000 
+n <- 100 
+v <- list(length = k) 
+for (i in 1:k) {
+  v[[i]] <- sample(twenties, size = n, replace = TRUE)
+}
+head(v)
+
 ```
 
-## Including Plots
+## Challenge 2
 
-You can also embed plots, for example:
+```{r challenge 2, include=TRUE}
+library(mosaic)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+#thirteen or fewer calls
+x<-ppois(13,lambda=18)
+x
+
+#no calls
+x<-ppois(0,lambda=18)
+x
+
+#exactly 7 calls
+x<-dpois(7,lambda=18)
+x
+
+#more than 20 calls
+x<-1-ppois(20,lambda=18)
+x
+
+#plot
+plot(0:40, dpois( x=0:40, lambda=18 ), xlim=c(0,40))
+
+#simulate
+saturdaycalls<-rpois(0:40, lambda=18 )
+
+saturdaycalls520<- sample(saturdaycalls, 520, replace=TRUE)
+
+plot2<- histogram(saturdaycalls520, 
+          main = "Saturday Calls",
+          xlab = "Distrubution", 
+          xlim = c(0, 40), 
+          ylab = "Calls", 
+          sub = "subtitle", 
+          col = "dark red")             
+
+plot2
+
+#The simulated calls look similar, but there are definitely differences (a few bars are way higher)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+##Challenge 3
+
+```{r challenge 3, include=TRUE}
+
+f <- "https://raw.githubusercontent.com/difiore/ADA-datasets/master/zombies.csv"
+d <- read_csv(f, col_names = TRUE)
+
+library(radiant)
+library(ggplot2)
+
+#Calculate population mean and stdev
+
+heightmean<-mean(d$height)
+weightmean<-mean(d$weight)
+agemean<-mean(d$age)
+killedmean<-mean(d$zombies_killed)
+educationmean<-mean(d$years_of_education)
+
+heightsd<-sdpop(d$height)
+weightsd<-sdpop(d$weight)
+agesd<-sdpop(d$age)
+killedsd<-sdpop(d$zombies_killed)
+educationsd<-sd(d$years_of_education)
+
+zombiestats<-matrix(c(heightmean,heightsd,weightmean,weightsd,agemean,agesd,killedmean,killedsd,educationmean,educationsd), ncol=2, byrow=TRUE)
+colnames(zombiestats) <-c("mean", "sd")
+rownames(zombiestats) <-c("height", "weight", "age", "numberkilled", "education")
+
+zombiestats
+
+#Make scatterplots of height and weight vs age
+
+
+heightagegraph<-ggplot(data=d, aes(
+  x = age, 
+  y = height,))
+
+heightagegraph
+
+#histogram and Q-Q plot
+
+#sample_n
+
+#more samples 
+
+```
+
+
